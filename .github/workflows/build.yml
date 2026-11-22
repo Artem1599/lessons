@@ -47,6 +47,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install --upgrade buildozer cython==0.29.37 virtualenv
 
+      - name: Pre-install Android SDK build-tools (with aidl)
+        run: |
+          yes | buildozer android debug -- --help >/dev/null 2>&1 || true
+          ANDROID_HOME="$HOME/.buildozer/android/platform/android-sdk"
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ -x "$SDKMANAGER" ]; then
+            yes | "$SDKMANAGER" --sdk_root="$ANDROID_HOME" \
+              "platform-tools" \
+              "platforms;android-33" \
+              "build-tools;33.0.2" \
+              "build-tools;34.0.0"
+          fi
+
       - name: Build Android APK
         env:
           BUILDOZER_WARN_ON_ROOT: "1"
